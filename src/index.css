@@ -1,4 +1,9 @@
 .pixel-font {
-    font-family: 'VT323';
-    font-size: 16px;
+  font-family: "VT323";
+  font-size: 16px;
+}
+
+body {
+  background-color: white;
+  /*background-image: url("../src/img/space.gif");*/
 }

@@ -17,7 +17,7 @@ function App() {
 
   return (
     <div className="pixel-font">
-      <div className="d-flex justify-content-center align-items-center mt-5">
+      <div className="">
         <Chat list={listMessages} />
       </div>
       <div className="d-flex justify-content-center align-items-center">
