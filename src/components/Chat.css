@@ -5,7 +5,11 @@
 }
 
 #top {
-  background-color: rgb(108, 117, 125);
+  background-color: rgb(252, 248, 227);
+}
+
+#username {
+  color: white;
 }
 
 #salaText {

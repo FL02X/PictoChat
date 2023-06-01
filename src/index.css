@@ -3,6 +3,10 @@
   font-size: 16px;
 }
 
+#root {
+  height: 100vh;
+}
+
 body {
   background-color: white;
   /*background-image: url("../src/img/space.gif");*/
