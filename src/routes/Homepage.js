@@ -1,7 +1,7 @@
 const Homepage = () => {
     return (
         <h6>
-            asd
+            Homepage placeholder.
         </h6>
     );
 }

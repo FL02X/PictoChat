@@ -11,6 +11,14 @@ const Input = (props) => {
   const [drawing, setDrawing] = useState(false);
   const [clear, setClear] = useState(false);
 
+  /* 
+    This function handles all the drawing process and sets
+    the default brush color and size.
+
+    --BUG: Changing the color or size of the brush will cause
+    the canvas to become blank as the beginning, NEED TO FIX.
+  */
+
   useEffect(() => {
     setClear(false);
     const paperScope = new paper.PaperScope();
@@ -20,6 +28,7 @@ const Input = (props) => {
     let path = null;
     const tool = new paperScope.Tool();
 
+    //Triggers when you hold the right click on the mouse.
     tool.onMouseDown = (event) => {
       setDrawing(true);
       path = new paperScope.Path();
@@ -28,9 +37,9 @@ const Input = (props) => {
       path.strokeCap = "round";
       path.strokeJoin = "round";
       path.add(event.point);
-      //path.dashArray = [10, 0];  //Extra
     };
 
+    //Triggers when to stop holding the right click of the mouse.
     tool.onMouseDrag = function (event) {
       path.add(event.point);
     };
@@ -44,6 +53,10 @@ const Input = (props) => {
     setBrushColor(event.target.value);
   };
 
+  /* 
+    Handles the logic of the "Save" button on the page.
+  */
+
   const handleSaveImage = () => {
     // Get the data URL of the canvas
     const dataURL = canvasRef.current.toDataURL("image/png");
@@ -55,17 +68,33 @@ const Input = (props) => {
     link.click();
   };
 
-  const handleClear = () => {
+  /* 
+    Handles the logic of the "Clear" button on the page.
+  */
+
+  const handleClearCanvas = () => {
     setClear(true);
     setDrawing(false);
   };
+
+  /* 
+    Renders the message of the text input on the page.
+  */
 
   const handleChange = (event) => {
     setMessage(event.target.value);
   };
 
+  /* 
+    Sends the data (drawing or text) to the parent component
+    depending if is only text, both text and drawing or alert the
+    user about no input found.
+  */
+
   const handleSend = () => {
     if (message == undefined || message.length == 0) {
+  
+      //No text and drawing found.
       if (drawing !== false) {
         console.log("1");
         const dataURL = canvasRef.current.toDataURL("image/png");
@@ -75,6 +104,8 @@ const Input = (props) => {
         alert("¡No has dibujado ni escrito nada!");
       }
     } else {
+
+      //Both text and drawing found.
       if (drawing !== false) {
         console.log("2");
         const dataURL = canvasRef.current.toDataURL("image/png");
@@ -85,17 +116,16 @@ const Input = (props) => {
         props.onChildMessage(img);
         props.onChildMessage(message);
       } else {
+
+        //Only text found.
         console.log("3");
         props.onChildMessage(message);
       }
     }
 
+    //Blank the canvas.
     setClear(true);
     setDrawing(false);
-  };
-
-  const log = () => {
-    //console.log(Img);
   };
 
   return (
@@ -120,7 +150,7 @@ const Input = (props) => {
           className="btn btn-warning ml-3"
           type="button"
           value={"🗑️"}
-          onClick={handleClear}
+          onClick={handleClearCanvas}
         ></input>
       </div>
       <div>

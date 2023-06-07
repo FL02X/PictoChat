@@ -1,6 +1,26 @@
+import axios from "axios";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 const Login = () => {
+
+    const [user, setUser] = useState();
+    const [password, setPassword] = useState();
+
+    /* 
+        Sends a request to the backend to get a SESSION_TOKEN
+        to send along with the WebSocket params to authenticate user.
+    */
+
+    const fetchData = () => {
+        axios.post("http://localhost:8080/login", {
+            user: user,
+            password: password
+        }).then((res) => {
+            console.log(res);
+        })
+    }
+
     return (
         <div>
             <div className="h-100 d-flex justify-content-center align-items-center">
@@ -15,7 +35,9 @@ const Login = () => {
                             User:
                         </div>
                         <div className="col-8 ">
-                            <input type="text" className="form-control"></input>
+                            <input required type="text" className="form-control" onChange={(e) => {
+                                setUser(e.target.value)
+                            }}></input>
                         </div>
                     </div>
                     <div className="row pt-3">
@@ -23,12 +45,14 @@ const Login = () => {
                             Password:
                         </div>
                         <div className="col-8">
-                            <input type="password" className="form-control"></input>
+                            <input required type="password" className="form-control" onChange={(e) => {
+                                setPassword(e.target.value)
+                            }}></input>
                         </div>
                     </div>
                     <div className="row">
                         <div className="col-12 pt-3">
-                            <button className="btn btn-secondary w-50">Sign in</button>
+                            <button className="btn btn-secondary w-50" onClick={fetchData}>Sign in</button>
                         </div>
                     </div>
                 </div>

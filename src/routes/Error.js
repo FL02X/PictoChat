@@ -7,7 +7,7 @@ const Error = () => {
     return (
         <div className='text-center'>
             <h1>💩💩</h1>
-            <p>Mames, ha ocurrido un error al cargar la pagina</p>
+            <p>Ha ocurrido un error al cargar la pagina</p>
             <p style={{color: 'red'}}>❌ {error.statusText || error.message}</p>
         </div>
     );

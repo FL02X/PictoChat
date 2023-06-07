@@ -21,6 +21,10 @@ const router = createBrowserRouter([
             {
                 path: "auth/register",
                 element: <Register />
+            },
+            {
+                path: "chat",
+                element: <App />
             }
         ]
     },

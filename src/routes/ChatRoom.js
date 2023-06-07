@@ -1,7 +1,7 @@
 const ChatRoom = () => {
     return (
         <h6>
-            asd
+            ChatRoom placeholder
         </h6>
     );
 }
