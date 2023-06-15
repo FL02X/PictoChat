@@ -1,24 +1,12 @@
-import axios from "axios";
 import { useState } from "react";
-import { Link } from "react-router-dom";
 
-const Login = () => {
+
+const Login = (props) => {
 
     const [user, setUser] = useState();
-    const [password, setPassword] = useState();
 
-    /* 
-        Sends a request to the backend to get a SESSION_TOKEN
-        to send along with the WebSocket params to authenticate user.
-    */
-
-    const fetchData = () => {
-        axios.post("http://localhost:8080/login", {
-            user: user,
-            password: password
-        }).then((res) => {
-            console.log(res);
-        })
+    const userLogged = () => {
+        props.onUserLogged(user);
     }
 
     return (
@@ -27,7 +15,7 @@ const Login = () => {
                 <div className="text-center p-4 border rounded">
                     <div className="row">
                         <div className="col-12">
-                            <h1 className="pb-3 m-0">Sign in</h1>
+                            <h1 className="pb-3 m-0">Join in</h1>
                         </div>
                     </div>
                     <div className="row ">
@@ -40,7 +28,7 @@ const Login = () => {
                             }}></input>
                         </div>
                     </div>
-                    <div className="row pt-3">
+                    {/* <div className="row pt-3">
                         <div className="col-4 d-flex align-items-center justify-content-center">
                             Password:
                         </div>
@@ -49,15 +37,15 @@ const Login = () => {
                                 setPassword(e.target.value)
                             }}></input>
                         </div>
-                    </div>
+                    </div> */}
                     <div className="row">
                         <div className="col-12 pt-3">
-                            <button className="btn btn-secondary w-50" onClick={fetchData}>Sign in</button>
+                            <button className="btn btn-secondary w-50" onClick={userLogged}>Sign in</button>
                         </div>
                     </div>
                 </div>
             </div>
-            <div className="mt-3 d-flex justify-content-center align-items-center">
+            {/* <div className="mt-3 d-flex justify-content-center align-items-center">
                 Or...
             </div>
             <div className="mt-3 d-flex justify-content-center align-items-center">
@@ -65,7 +53,7 @@ const Login = () => {
                         Sign up
                 </Link>
 
-            </div>
+            </div> */}
         </div>
     );
 }

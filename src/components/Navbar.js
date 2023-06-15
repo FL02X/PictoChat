@@ -1,11 +1,8 @@
-import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import logo from '../img/pictoLogo.png';
 import './Navbar.css'
 
 const Navbar = (props) => {
-
-    const [isLogged, setIsLogged] = useState(false);
 
     return (
         <div className="pixel-font">

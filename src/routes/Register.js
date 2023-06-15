@@ -1,5 +1,9 @@
 import { Link } from "react-router-dom";
 
+/* 
+    UNUSED REGISTER FUNCTIONALITY.
+*/
+
 const Register = () => {
     return (
         <div>

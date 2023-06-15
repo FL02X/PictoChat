@@ -92,15 +92,15 @@ const Input = (props) => {
   */
 
   const handleSend = () => {
-    if (message == undefined || message.length == 0) {
+    if (message === undefined || message.length === 0) {
   
-      //No text and drawing found.
+      //Only drawing and not text found.
       if (drawing !== false) {
         console.log("1");
         const dataURL = canvasRef.current.toDataURL("image/png");
-        const img = React.createElement("img", { src: dataURL });
-        props.onChildMessage(img);
+        props.onChildMessage([null, dataURL, 1]);
       } else {
+        //No text and no drawing found.
         alert("¡No has dibujado ni escrito nada!");
       }
     } else {
@@ -109,17 +109,12 @@ const Input = (props) => {
       if (drawing !== false) {
         console.log("2");
         const dataURL = canvasRef.current.toDataURL("image/png");
-        const img = React.createElement("img", {
-          src: dataURL,
-          style: "width: 100, height: auto",
-        });
-        props.onChildMessage(img);
-        props.onChildMessage(message);
+        props.onChildMessage([message, dataURL, 2]);
       } else {
 
         //Only text found.
         console.log("3");
-        props.onChildMessage(message);
+        props.onChildMessage([message, null, 3]);
       }
     }
 
@@ -178,9 +173,6 @@ const Input = (props) => {
             onClick={handleSaveImage}
           >
             Save
-          </button>
-          <button className="btn btn-outline-secondary" onClick={log}>
-            Log
           </button>
         </div>
       </div>
