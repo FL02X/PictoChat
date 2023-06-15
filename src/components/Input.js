@@ -96,7 +96,6 @@ const Input = (props) => {
   
       //Only drawing and not text found.
       if (drawing !== false) {
-        console.log("1");
         const dataURL = canvasRef.current.toDataURL("image/png");
         props.onChildMessage([null, dataURL, 1]);
       } else {
@@ -107,13 +106,11 @@ const Input = (props) => {
 
       //Both text and drawing found.
       if (drawing !== false) {
-        console.log("2");
         const dataURL = canvasRef.current.toDataURL("image/png");
         props.onChildMessage([message, dataURL, 2]);
       } else {
 
         //Only text found.
-        console.log("3");
         props.onChildMessage([message, null, 3]);
       }
     }
@@ -121,6 +118,7 @@ const Input = (props) => {
     //Blank the canvas.
     setClear(true);
     setDrawing(false);
+    setMessage("");
   };
 
   return (

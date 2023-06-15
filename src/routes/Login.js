@@ -6,7 +6,21 @@ const Login = (props) => {
     const [user, setUser] = useState();
 
     const userLogged = () => {
-        props.onUserLogged(user);
+        if (user === undefined) {
+            alert("Escribe un nombre de usuario.")
+            return;
+        }
+        const userTrim = user.trim();
+        console.log(userTrim);
+        if (userTrim.length > 10) {
+            alert("El nombre de usuario debe ser menor de 10 caracteres.")
+            return;
+        }
+        if (userTrim.length === 0) {
+            alert("Escribe un nombre de usuario.")
+            return;
+        }
+        props.onUserLogged(userTrim);
     }
 
     return (
@@ -18,7 +32,7 @@ const Login = (props) => {
                             <h1 className="pb-3 m-0">Join in</h1>
                         </div>
                     </div>
-                    <div className="row ">
+                    <div className="row">
                         <div className="col-4 d-flex align-items-center justify-content-center">
                             User:
                         </div>
@@ -38,8 +52,8 @@ const Login = (props) => {
                             }}></input>
                         </div>
                     </div> */}
-                    <div className="row">
-                        <div className="col-12 pt-3">
+                    <div className="row pt-3">
+                        <div className="col-12">
                             <button className="btn btn-secondary w-50" onClick={userLogged}>Sign in</button>
                         </div>
                     </div>

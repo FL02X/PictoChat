@@ -8,6 +8,7 @@ import "./index.css";
 
 function App() {
   const [user, setUser] = useState(null);
+  const [currentSocket, setCurrentSocket] = useState(null);
 
   const [userIsLogged, setUserIsLogged] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -16,71 +17,90 @@ function App() {
     WebSocket connection.
   */
 
-    useEffect(() => {
-      let ws = new WebSocket(`ws://localhost:8081/${user}`);
+  useEffect(() => {
+    const ws = new WebSocket(`ws://localhost:8081/`);
+    setCurrentSocket(ws);
 
-      ws.onopen = () => {
-        console.log(ws.readyState)
-        console.log(console.log(user) + "aa");
+    ws.onopen = () => {
+      console.log("WEBSOCKET OPEN | STATUS: " + ws.readyState);
+    }
+
+    ws.onclose = (event) => {
+      setUserIsLogged(false);
+      console.log(event);
+      alert(event.reason);
+    }
+
+    /* 
+      Handles all the received messages and
+      his rendering.
+    */
+
+    ws.onmessage = (data) => {
+      console.log("RECEIVED MESSAGE: " + data.data, data.origin);
+      const message = JSON.parse(data.data);
+
+      //When it contains both image and text.
+      if (message.image !== null && message.message !== null) {
+        const img = React.createElement("img", {
+          src: message.image,
+          style: { width: 300, height: 'auto' },
+        });
+
+        setMessages((array) => [...array, {
+          username: message.user,
+          message: message.message
+        }]);
+
+        setMessages((array) => [...array, {
+          username: message.user,
+          message: img
+        }]);
+        //When it only contains image.
+      } else if (message.image !== null && message.message == null) {
+        const img = React.createElement("img", {
+          src: message.image,
+          style: { width: 300, height: 'auto' },
+        });
+
+        setMessages((array) => [...array, {
+          username: message.user,
+          message: img
+        }]);
+        //When it only contains text.
+      } else {
+        setMessages((array) => [...array, {
+          username: message.user,
+          message: message.message
+        }]);
       }
-    
-      ws.onmessage = (data) => {
-        console.log(data.data, data.origin);
-        const message = JSON.parse(data.data);
-    
-        //Contains image and text.
-        if (message.image !== null && message.message !== null) {
-          console.log("1", user)
-          const img = React.createElement("img", {
-            src: message.image,
-            style: { width: 100, height: 'auto' },
-          });
-    
-          setMessages((array) => [...array, {
-            username: message.user,
-            message: message.message
-          }]);
-    
-          setMessages((array) => [...array, {
-            username: message.user,
-            message: img
-          }]);
-          //Only contains image.
-        } else if (message.image !== null && message.message == null) {
-          console.log("2", user)
-          const img = React.createElement("img", {
-            src: message.image,
-            style: { width: 100, height: 'auto' },
-          });
-    
-          setMessages((array) => [...array, {
-            username: message.user,
-            message: img
-          }]);
-          //Only contains text.
-        } else {
-          console.log("3", user);
-          setMessages((array) => [...array, {
-            username: message.user,
-            message: message.message
-          }]);
-        }
-      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
-      const sendMessage = () => {
-        if (ws && ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify(sendData));
-        } else {
-          console.log("WebSocket is not open");
-        }
-      }
-    }, [user])
+  /* 
+    Sends the username that the connection is
+    gonna use.
+  */
 
-  
+  const sendUsername = (userChild) => {
+    setUser(userChild);
 
+    const sendUser = {
+      username: userChild
+    }
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (currentSocket.readyState === WebSocket.OPEN) {
+      currentSocket.send(JSON.stringify(sendUser));
+      console.log("STATUS: " + currentSocket.readyState, sendUser)
+    } else {
+      console.log("WebSocket is not open");
+      setUserIsLogged(false);
+      return;
+    }
 
+    setUserIsLogged(true);
+  }
 
   /* 
     Renders the messages on the page.
@@ -93,80 +113,32 @@ function App() {
   ));
 
   /*
-    This function gets the data (text) and
-    sends the message to the WebSocket and renders
-    the message on the page.    
+    This function gets the data from the input and
+    sends the message to the WebSocket.
   */
 
   const handleChildMessage = (data) => {
     //-- DEBUG
-    console.log(data, user);
+    //console.log(data, user);
 
-    //Sends the data to Websocket.
+    //Data to be sended to Websocket.
     const sendData = {
       message: data[0],
       image: data[1]
     }
 
-    sendMessage(sendData);
-
-    //Renders the data on the page.
-
-    /*    if (data.includes(1)) {
-         console.log(1)
-         const img = React.createElement("img", {
-           src: data[1],
-           style: { width: 100, height: 'auto' },
-         });
-   
-         setMessages((array) => [...array, {
-           username: user,
-           message: img
-         }])
-       } else if (data.includes(2)) {
-         console.log(2)
-         const img = React.createElement("img", {
-           src: data[1],
-           style: { width: 100, height: 'auto' },
-         });
-   
-         setMessages((array) => [...array, {
-           username: user,
-           message: img
-         }])
-         setMessages((array) => [...array, {
-           username: user,
-           message: [0]
-         }])
-       } else {
-         console.log(3)
-         setMessages((array) => [...array, {
-           username: user,
-           message: [0]
-         }])
-       }
-   
-   
-   
-       //-- DEBUG
-       console.log(sendData); */
+    if (currentSocket && currentSocket.readyState === WebSocket.OPEN) {
+      currentSocket.send(JSON.stringify(sendData));
+    } else {
+      console.log("WebSocket is not open");
+    }
   };
-
-  /* 
-    This function gets the name introduced on
-    the Login component.
-  */
-
-  const handleUserLogged = (user) => {
-    setUser(user);
-    setUserIsLogged(true);
-  }
 
   return (
     <div className="pixel-font">
       <Navbar />
       {!userIsLogged ? (
-        <Login onUserLogged={handleUserLogged} />
+        <Login onUserLogged={sendUsername} />
       ) : (<div>
         <div className="pl-5 pr-5">
           <Chat list={listMessages} username={user} />
