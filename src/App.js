@@ -18,7 +18,7 @@ function App() {
   */
 
   useEffect(() => {
-    const ws = new WebSocket(`ws://localhost:8081/`);
+    const ws = new WebSocket(process.env.REACT_APP_WEBSOCKET_SERVER);
     setCurrentSocket(ws);
 
     ws.onopen = () => {
@@ -29,6 +29,7 @@ function App() {
       setUserIsLogged(false);
       console.log(event);
       alert(event.reason);
+      window.location.reload();
     }
 
     /* 
@@ -39,6 +40,22 @@ function App() {
     ws.onmessage = (data) => {
       console.log("RECEIVED MESSAGE: " + data.data, data.origin);
       const message = JSON.parse(data.data);
+
+      /* 
+        Checks if the message is a broadcast
+        welcome.
+      */
+
+      if (message.user === "admin") {
+        setMessages((array) => [...array, {
+          username: "admin",
+          message: message.message,
+          user: message.username,
+          reason: message.reason,
+          color: message.color
+        }]);
+        return;
+      }
 
       //When it contains both image and text.
       if (message.image !== null && message.message !== null) {
@@ -106,11 +123,26 @@ function App() {
     Renders the messages on the page.
   */
 
-  const listMessages = messages.map((item, index) => (
-    <li key={index}>
-      {item.username}: {item.message}
+  const listMessages = messages.map((item, index) => {
+    //Broadcast welcome message.
+    if (item.username === "admin") {
+      console.log("admin");
+      const colorUser = item.color;
+      if(item.reason === "join") {
+        return <li key={index}>
+        {item.message} <strong><label style={{color: colorUser}}>{item.user}</label></strong> {"!"}
+      </li>
+      } else {
+        return <li key={index}>
+        <strong><label style={{color: colorUser}}>{item.user}</label></strong> {item.message}
+      </li>
+      }
+      
+    }
+    return <li key={index}>
+      <strong>{item.username}</strong>: {item.message}
     </li>
-  ));
+  });
 
   /*
     This function gets the data from the input and

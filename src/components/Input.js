@@ -125,22 +125,22 @@ const Input = (props) => {
     <div className="mb-5">
       <canvas
         ref={canvasRef}
-        className={"bg-white border"}
+        className={"bg-white border border-secondary"}
         id="canvas"
       ></canvas>
       <div>
         BRUSH SIZE:
         <input
-          className="mr-3 ml-2 justify-content-center"
+          className="mr-3 ml-2 justify-content-center custom-range w-25"
           type={"range"}
           min={"1"}
-          max={"50"}
+          max={"5"}
           value={brushSize}
           onChange={handleBrushSizeChange}
         ></input>
         <span className="">{brushSize}</span>
         <input
-          className="btn btn-warning ml-3"
+          className="btn btn-secondary ml-3"
           type="button"
           value={"🗑️"}
           onClick={handleClearCanvas}
@@ -157,7 +157,7 @@ const Input = (props) => {
       </div>
       <div className="input-group mt-3">
         <input
-          className="form-control"
+          className="form-control border-secondary"
           type="text"
           value={message}
           onChange={handleChange}
