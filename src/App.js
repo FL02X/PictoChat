@@ -1,17 +1,27 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import React from "react";
 import Login from "./routes/Login";
 import Chat from "./components/Chat";
 import Input from "./components/Input";
 import Navbar from "./components/Navbar";
 import "./index.css";
+import joinAudio from './sounds/join.mp3'
+import leaveAudio from './sounds/leave.mp3';
+import invalidAudio from './sounds/invalid.mp3'
+import receivedJiggle from './sounds/messageJiggle.mp3'
+import messageJiggle from './sounds/messageSent.mp3'
 
 function App() {
-  const [user, setUser] = useState(null);
   const [currentSocket, setCurrentSocket] = useState(null);
+  const [user, setUser] = useState();
 
   const [userIsLogged, setUserIsLogged] = useState(false);
   const [messages, setMessages] = useState([]);
+  const audioLeave = new Audio(leaveAudio);
+  const audioInvalid = new Audio(invalidAudio);
+  const audioReceived = new Audio(receivedJiggle);
+  const audioSent = new Audio(messageJiggle);
+  const audioJoin = new Audio(joinAudio);
 
   /*
     WebSocket connection.
@@ -29,6 +39,7 @@ function App() {
       setUserIsLogged(false);
       console.log(event);
       alert(event.reason);
+      audioInvalid.play();
       window.location.reload();
     }
 
@@ -48,12 +59,13 @@ function App() {
 
       if (message.user === "admin") {
         setMessages((array) => [...array, {
-          username: "admin",
+          username: message.username,
           message: message.message,
-          user: message.username,
+          user: message.user,
           reason: message.reason,
           color: message.color
         }]);
+        audioReceived.play();
         return;
       }
 
@@ -84,12 +96,22 @@ function App() {
           username: message.user,
           message: img
         }]);
+        if (message.user === user) {
+          audioSent.play();
+        } else {
+          audioReceived.play();
+        }
         //When it only contains text.
       } else {
         setMessages((array) => [...array, {
           username: message.user,
           message: message.message
         }]);
+        if (message.user === user) {
+          audioSent.play();
+        } else {
+          audioReceived.play();
+        }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -101,8 +123,6 @@ function App() {
   */
 
   const sendUsername = (userChild) => {
-    setUser(userChild);
-
     const sendUser = {
       username: userChild
     }
@@ -117,32 +137,64 @@ function App() {
     }
 
     setUserIsLogged(true);
+    setUser(userChild);
+    audioJoin.play();
+    console.log(user);
   }
+
+  /* 
+    Focus on the last item on the
+    list.
+  */
+  const listRef = useRef(null);
+
+  useEffect(() => {
+    setTimeout(() => listRef.current.scrollIntoView({ inline: "center", behavior: 'smooth'}), 0);
+    console.log(listRef);
+  }, [messages.length])
 
   /* 
     Renders the messages on the page.
   */
 
   const listMessages = messages.map((item, index) => {
+
+    /* 
+      NEED TO FIX:
+      Cant put join and leave sounds, because .map
+      renders every single one of the sounds. 
+      Example: 5 admin messages, 5 sounds at the same
+      time every time a new entry to .map is made.
+    */
+
     //Broadcast welcome message.
-    if (item.username === "admin") {
-      console.log("admin");
+    if (item.user === "admin") {
       const colorUser = item.color;
-      if(item.reason === "join") {
-        return <li key={index}>
-        {item.message} <strong><label style={{color: colorUser}}>{item.user}</label></strong> {"!"}
-      </li>
+      if (item.reason === "join") {
+        console.log("join")
+        return <li ref={listRef} key={index}>
+          {item.message} <strong><label style={{ color: colorUser }}>{item.username}</label></strong> {"!"}
+        </li>
+
       } else {
-        return <li key={index}>
-        <strong><label style={{color: colorUser}}>{item.user}</label></strong> {item.message}
-      </li>
+        console.log("leave");
+        return <li ref={listRef} key={index}>
+          <strong><label style={{ color: colorUser }}>{item.username}</label></strong> {item.message}
+        </li>
       }
-      
+
+    } else {
+      return <li ref={listRef} key={index}>
+        <strong>{item.username}</strong>: {item.message}
+      </li>
     }
-    return <li key={index}>
-      <strong>{item.username}</strong>: {item.message}
-    </li>
+
   });
+
+/*   useEffect(() => {
+    setTimeout(() => listMessages[listMessages.length - 1].scrollIntoView({ inline: "center", behavior: 'smooth'}), 0);
+    console.log("scroll", listMessages)
+  }, [listMessages]) */
 
   /*
     This function gets the data from the input and
@@ -173,7 +225,7 @@ function App() {
         <Login onUserLogged={sendUsername} />
       ) : (<div>
         <div className="pl-5 pr-5">
-          <Chat list={listMessages} username={user} />
+          <Chat list={listMessages}/>
         </div>
         <div className="d-flex justify-content-center align-items-center">
           <Input onChildMessage={handleChildMessage} />

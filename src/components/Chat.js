@@ -1,6 +1,15 @@
+import { useEffect, useRef } from "react";
 import "./Chat.css";
 
 const Chat = (props) => {
+
+/*   const listRef = useRef(null);
+
+  useEffect(() => {
+    setTimeout(() => listRef.scrollIntoView({ inline: "center", behavior: 'smooth'}), 0);
+    console.log("scroll", listRef)
+  }, [props.list]) */
+
   return (
     <div className="w-100">
       <div className="d-flex justify-content-center align-items-center bg-white">

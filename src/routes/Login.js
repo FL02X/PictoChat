@@ -1,6 +1,5 @@
 import { useState } from "react";
 
-
 const Login = (props) => {
 
     const [user, setUser] = useState();
@@ -26,7 +25,7 @@ const Login = (props) => {
     return (
         <div>
             <div className="h-100 d-flex justify-content-center align-items-center">
-                <div className="text-center p-4 border rounded">
+                <div className="text-center p-4 border rounded bg-white">
                     <div className="row">
                         <div className="col-12">
                             <h1 className="pb-3 m-0">Join in</h1>

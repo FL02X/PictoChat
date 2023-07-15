@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import React from "react";
 import { paper } from "paper";
 import "./Input.css";
+import drawingAudio from '../sounds/drawing.mp3'
 
 const Input = (props) => {
   const canvasRef = useRef(null);
@@ -10,6 +11,7 @@ const Input = (props) => {
   const [brushSize, setBrushSize] = useState(5);
   const [drawing, setDrawing] = useState(false);
   const [clear, setClear] = useState(false);
+  const audioDrawing = new Audio(drawingAudio);
 
   /* 
     This function handles all the drawing process and sets
@@ -28,7 +30,9 @@ const Input = (props) => {
     let path = null;
     const tool = new paperScope.Tool();
 
-    //Triggers when you hold the right click on the mouse.
+    //http://paperjs.org/reference/tool/
+
+    //Create a new path every time the mouse is clicked
     tool.onMouseDown = (event) => {
       setDrawing(true);
       path = new paperScope.Path();
@@ -37,12 +41,20 @@ const Input = (props) => {
       path.strokeCap = "round";
       path.strokeJoin = "round";
       path.add(event.point);
+      audioDrawing.play();
+      audioDrawing.loop = true;
     };
 
-    //Triggers when to stop holding the right click of the mouse.
-    tool.onMouseDrag = function (event) {
+    //Add a point to the path every time the mouse is dragged
+    tool.onMouseDrag = (event) => {
       path.add(event.point);
     };
+
+    //The function to be called when the mouse button is released.
+    tool.onMouseUp = (event) => {
+      audioDrawing.pause();
+    }
+
   }, [brushColor, brushSize, clear]);
 
   const handleBrushSizeChange = (event) => {
